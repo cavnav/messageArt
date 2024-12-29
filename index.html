@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Editor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .preview {
+            margin-top: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+        .media-item {
+            margin-bottom: 10px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Media Editor</h1>
+
+    <!-- Выбор типа контента -->
+    <label for="mediaType">Add:</label>
+    <select id="mediaType">
+        <option value="text">Text</option>
+        <option value="image">Image</option>
+    </select>
+    <button id="addContent">Add</button>
+
+    <!-- Контейнеры для ввода -->
+    <div id="textInput" style="display: none; margin-top: 10px;">
+        <textarea id="textContent" rows="3" placeholder="Enter your text here..." style="width: 100%;"></textarea>
+        <button id="addText">Add Text</button>
+    </div>
+
+    <div id="imageInput" style="display: none; margin-top: 10px;">
+        <input type="file" id="imageFile" accept="image/*">
+        <button id="addImage">Add Image</button>
+    </div>
+
+    <!-- Превью -->
+    <h2>Preview</h2>
+    <div id="preview" class="preview">
+        <!-- Контент будет добавляться сюда -->
+    </div>
+
+    <!-- Сохранение -->
+    <button id="saveGallery" style="margin-top: 20px;">Done! Get Link</button>
+
+    <script>
+        const mediaType = document.getElementById('mediaType');
+        const addContentButton = document.getElementById('addContent');
+        const textInput = document.getElementById('textInput');
+        const imageInput = document.getElementById('imageInput');
+        const preview = document.getElementById('preview');
+
+        // Показать соответствующий ввод
+        addContentButton.addEventListener('click', () => {
+            const selectedType = mediaType.value;
+            textInput.style.display = selectedType === 'text' ? 'block' : 'none';
+            imageInput.style.display = selectedType === 'image' ? 'block' : 'none';
+        });
+
+        // Добавление текста
+        document.getElementById('addText').addEventListener('click', () => {
+            const textContent = document.getElementById('textContent').value;
+            if (textContent.trim()) {
+                const textElement = document.createElement('p');
+                textElement.textContent = textContent;
+                textElement.className = 'media-item';
+                preview.appendChild(textElement);
+                document.getElementById('textContent').value = ''; // Очистка ввода
+            }
+        });
+
+        // Добавление изображения
+        document.getElementById('addImage').addEventListener('click', () => {
+            const imageFile = document.getElementById('imageFile').files[0];
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = e.target.result;
+                    imgElement.className = 'media-item';
+                    preview.appendChild(imgElement);
+                };
+                reader.readAsDataURL(imageFile);
+                document.getElementById('imageFile').value = ''; // Очистка ввода
+            }
+        });
+
+        // Сохранение галереи
+        document.getElementById('saveGallery').addEventListener('click', () => {
+            const galleryHTML = preview.innerHTML;
+            const blob = new Blob([galleryHTML], { type: 'text/html' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'message.html';
+            link.click();
+        });
+    </script>
+</body>
+</html>
